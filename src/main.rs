@@ -1,3 +1,5 @@
+const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+
 fn main() {
-    println!("wirefunc 0.1.0");
+    println!("wirefunc v{}", VERSION);
 }
