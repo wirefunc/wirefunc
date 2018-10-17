@@ -1,0 +1,33 @@
+{
+  "name": "wirefunc",
+  "version": "0.1.0",
+  "description": "Install wirefunc CLI",
+  "preferGlobal": true,
+  "main": "index.js",
+  "scripts": {
+    "install": "binwrap-install",
+    "prepare": "binwrap-prepare",
+    "test": "binwrap-test",
+    "prepublishOnly": "binwrap-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wirefunc/wirefunc.git"
+  },
+  "author": "",
+  "license": "BSD-3-Clause",
+  "files": [
+    "index.js",
+    "bin"
+  ],
+  "bin": {
+    "wf": "bin/wf"
+  },
+  "bugs": {
+    "url": "https://github.com/wirefunc/wirefunc/issues"
+  },
+  "homepage": "https://github.com/wirefunc/wirefunc#readme",
+  "dependencies": {
+    "binwrap": "0.2.0"
+  }
+}
