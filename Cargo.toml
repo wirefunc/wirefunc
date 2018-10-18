@@ -4,3 +4,7 @@ version = "0.1.0"
 authors = ["Richard Feldman <richard.t.feldman@gmail.com>"]
 
 [dependencies]
+
+[dependencies.clap]
+version = "~2.32.0"
+default-features = false
