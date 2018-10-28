@@ -1,7 +1,9 @@
 mod cli;
+mod code_gen;
 mod error_messages;
 mod language;
 mod problems;
+mod types;
 
 use problems::Problem;
 use std::collections::HashSet;
