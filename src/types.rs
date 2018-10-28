@@ -6,6 +6,9 @@ pub struct Type {
 
 #[derive(Debug)]
 pub enum TypePrimitive {
+    // scalars
+    Bool,
+    String,
     Int,
     Int8,
     Int16,
@@ -14,14 +17,17 @@ pub enum TypePrimitive {
     Float,
     Float32,
     Float64,
-    String,
+
+    // iterable collections
     Array(Box<Type>),
     Dict(Box<Type>, Box<Type>),
     Set(Box<Type>),
-    Record(RecordInfo),
+
+    // custom types
     Custom(CustomTypeInfo),
-    Enum(EnumInfo),
-    Param(TypeParam),
+
+    // records
+    Record(RecordInfo),
 }
 
 #[derive(Debug, PartialEq)]
@@ -57,21 +63,6 @@ pub struct CustomTypeInfo {
 }
 
 #[derive(Debug)]
-pub struct EnumInfo {
-    name: TypeName,
-    formerNames: Vec<TypeName>,
-    variants: Vec<EnumVariant>,
-}
-
-#[derive(Debug, PartialEq)]
-pub struct EnumVariant {
-    optionality: Optionality,
-    name: TypeName,
-    value: i32,
-    formerNames: Vec<String>,
-}
-
-#[derive(Debug)]
 pub struct Field {
     optionality: Optionality,
     name: String,
@@ -87,7 +78,6 @@ pub struct Variant {
     name: String,
     tipe: Type,
     variantId: i32,
-    fallback: bool,
     formerNames: Vec<String>,
     contents: Vec<Type>,
 }
