@@ -1,6 +1,10 @@
+#[macro_use]
+extern crate maplit;
+
 mod cli;
 mod code_gen;
 mod error_messages;
+mod field_id;
 mod language;
 mod problems;
 mod types;
