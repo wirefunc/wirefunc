@@ -1,11 +1,13 @@
 [package]
-name = "wirefunc"
+name = "wf"
 version = "0.1.0"
 authors = ["Richard Feldman <richard.t.feldman@gmail.com>"]
 
 [dependencies]
-maplit = "1.0.1"
 
 [dependencies.clap]
 version = "~2.32.0"
 default-features = false
+
+[dev-dependencies]
+maplit = "1.0.1"
