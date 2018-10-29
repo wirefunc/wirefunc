@@ -1,10 +1,12 @@
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Type {
     current: TypePrimitive,
     formerly: Vec<TypePrimitive>,
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum TypePrimitive {
     // scalars
     Bool,
@@ -31,17 +33,20 @@ pub enum TypePrimitive {
 }
 
 #[derive(Debug, PartialEq)]
+#[allow(dead_code)]
 pub enum Optionality {
     Required,
     Optional,
 }
 
 #[derive(Debug, PartialEq)]
+#[allow(dead_code)]
 pub enum TypeParam {
     TypeParam(String),
 }
 
 #[derive(Debug, PartialEq)]
+#[allow(dead_code)]
 pub enum TypeName {
     TypeName(String),
 }
@@ -49,7 +54,7 @@ pub enum TypeName {
 #[derive(Debug)]
 pub struct RecordInfo {
     name: Option<TypeName>,
-    formerNames: Vec<TypeName>,
+    former_names: Vec<TypeName>,
     fields: Vec<Field>,
     params: Vec<TypeParam>,
 }
@@ -57,27 +62,35 @@ pub struct RecordInfo {
 #[derive(Debug)]
 pub struct CustomTypeInfo {
     name: TypeName,
-    formerNames: Vec<TypeName>,
+    former_names: Vec<TypeName>,
     variants: Vec<Variant>,
     params: Vec<TypeParam>,
 }
+
+/// Use a 64-bit integer here for mmap alignment.
+/// In JSON it'll be represented as a string anyway!
+pub type FieldId = u64;
 
 #[derive(Debug)]
 pub struct Field {
     optionality: Optionality,
     name: String,
     tipe: Type,
-    fieldId: i32,
+    field_id: FieldId,
     fallback: bool,
-    formerNames: Vec<String>,
+    former_names: Vec<String>,
 }
+
+/// Use a 64-bit integer here for mmap alignment.
+/// In JSON it'll be represented as a string anyway!
+pub type VariantId = u64;
 
 #[derive(Debug)]
 pub struct Variant {
     optionality: Optionality,
     name: String,
     tipe: Type,
-    variantId: i32,
-    formerNames: Vec<String>,
+    variant_id: VariantId,
+    former_names: Vec<String>,
     contents: Vec<Type>,
 }

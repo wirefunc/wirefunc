@@ -1,34 +1,28 @@
 use std::collections::HashSet;
-use std::fs::File;
+use std::io;
 use types::Field;
 
 #[derive(Debug)]
-pub enum Problem<'a> {
+pub enum _Problem<'a> {
     RetiredNamesUsed(HashSet<&'a str>),
+    WriteError(io::Error),
 }
 
-pub fn productionize<'a>(
-    retired_names: HashSet<&str>,
-    fields_by_name: Vec<(&'a str, Box<Field>)>,
-) -> Result<Vec<(String, (String, Box<Field>))>, Problem<'a>> {
-    let invalid_names: HashSet<&'a str> = check_for_retired_names(retired_names, &fields_by_name);
+// pub fn _productionize<'a>(
+//     retired_names: HashSet<&str>,
+//     fields_by_name: Vec<(&'a str, Box<Field>)>,
+// ) -> Result<(), Problem<'a>> {
+//     let invalid_names: HashSet<&'a str> = check_for_retired_names(retired_names, &fields_by_name);
 
-    if invalid_names.is_empty() {
-        Ok(minify_names(fields_by_name))
-    } else {
-        Err(Problem::RetiredNamesUsed(invalid_names))
-    }
-}
+//     if invalid_names.is_empty() {
+//         panic!("TODO");
+//     // Ok(minify(fields_by_name))
+//     } else {
+//         Err(Problem::RetiredNamesUsed(invalid_names))
+//     }
+// }
 
-pub fn generate_elm_code(fields: Vec<(String, (String, Box<Field>))>, file: File) {
-    // TODO stream output to the file as we figure out what to write!
-}
-
-pub fn generate_js_code(fields: Vec<(String, (String, Box<Field>))>, file: File) {
-    // TODO stream output to the file as we figure out what to write!
-}
-
-fn check_for_retired_names<'a>(
+fn _check_for_retired_names<'a>(
     retired_names: HashSet<&str>,
     fields_by_name: &Vec<(&'a str, Box<Field>)>,
 ) -> HashSet<&'a str> {
@@ -46,12 +40,13 @@ fn check_for_retired_names<'a>(
     // We're starting with a HashMap<&str, Field>, so use whatever seems appropriate for names.
 }
 
-fn minify_names<'a>(
-    fields_by_name: Vec<(&'a str, Box<Field>)>,
-) -> Vec<(String, (String, Box<Field>))> {
-    // TODO iterate over the fields
-    panic!("TODO");
-}
+// fn minify<'a>(fields_by_name: Vec<(&'a str, Box<Field>)>) -> Vec<(&'a str, Box<Field>)> {
+//     let mut field_id = 0;
+
+//     for pair in fields_by_name {
+//         let (name, field) = pair;
+//     }
+// }
 
 // TODO:
 //
