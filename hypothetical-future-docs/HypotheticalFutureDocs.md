@@ -132,3 +132,74 @@ single request that uses this field!
 
 ## FAQ
 
+## Appendix A: Compact Binary Encoding
+
+This is an alternative to JSON based on Capnproto. The goals include:
+
+* Parse much, much faster.
+* Be smaller on the wire.
+
+## Decoding a Payload
+
+Every WireFunc payload has, at its root, a single record.
+
+Every record begins with a 64-bit value that maps out where its contents are.
+So WireFunc begins every payload by reading the first 8 bytes of the payload
+into memory, and decoding those bytes as a Record.
+
+## Decoding Records
+
+A record begins with a 64-bit mapping of its contents.
+
+[Capnproto Structs](https://capnproto.org/encoding.html#structs) have a similar
+64-bit mapping value which specifies:
+* (2 bits) I am a Struct Pointer
+* (30 bits) Here is the memory offset where my data begins (signed, in words)
+* (16 bits) Here is how many words long my data section is
+* (16 bits) Here is how many words long my pointer section is
+
+The field values themselves are positioned in the data section using a complex
+algorithm at compile time. This means if you deprecate a field, it will leave a
+hole on the wire which still takes up space. However, that empty space will
+consist of a bunch of consecutive zeroes, which compress well.
+
+A downside of this encoding is that it cannot distinguish a *missing* integer
+field from an integer field that was sent back as zero. An outdated receiver
+will cheerfully continue reading from the data section in exactly the same spot
+as it always has, and if there are all zeroes in that section, then it looks
+like the sender wanted to transmit a zero!
+
+This is presumably one reason why Capnproto has the "everything is optional,
+and missing fields default to zero" policy. It is very efficient on the wire.
+
+This design is incompatible with WireFunc's goals. There should
+always be a different runtime representation between a missing field and a
+present one. The user must opt into defaulting to zero on a case-by-case basis.
+
+To facilitate this, WireFunc record mappings specify which scalar fields are
+present. They do this using consecutive bit masks which are all 0s if all the
+fields are missing, and which have 1s in appropriate places if fields are
+present.
+
+(Non-scalar fields are pointers anyway, so they don't need entries in here.)
+
+> If we run out of room in the 16 bits worth of bitmasks we have in the Record
+> Mapping, there can be additional bitmasks in the words following the Record
+> Mapping. (This means that Record Mappings are variable-width, whereas in
+> Capnproto they are fixed-width at precisely 1 word.)
+>
+> How many bitmask words there are is not encoded in the message, but
+> rather in the receiver. The bitmasks are organized such that later fieldIDs
+> are included later, so if you are an outdated receiver, you may not end up
+> loading all the bitmasks into memory. That's fine though, because you don't
+> know how to decode those fields anyway!
+
+The receiver has its own 16-bit bitmask (plus possibly additional 64-bit ones
+as needed) code generated as a static constant, so the overhead here is one
+16-bit hardcoded constant in memory per record field.
+
+This does mean that if you have more than 16 scalar fields in your record,
+including retired ones (due to type changes and removals) you'll have to load
+1 extra word for that message. That's not ideal, but it's okay.
+
+The bitmasks also mean it's safe to reuse
