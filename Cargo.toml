@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Richard Feldman <richard.t.feldman@gmail.com>"]
 
 [dependencies]
+byteorder = "1.2.7"
 
 [dependencies.clap]
 version = "~2.32.0"
