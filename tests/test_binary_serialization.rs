@@ -40,6 +40,8 @@ fn read_test_file(filename: &str) -> std::io::Result<Vec<i64>> {
     read_i64_array_from(&mut read_file)
 }
 
+/// First read the length of the array. It will be the first u32 in the bytes.
+/// Then, read the elements of the array, each of which is an i64.
 fn read_i64_array_from<R: io::Read>(reader: &mut R) -> std::io::Result<Vec<i64>> {
     let array_length: usize = reader.read_u32::<LittleEndian>().unwrap() as usize;
     let mut buffer: Vec<i64> = vec![0i64; array_length];
@@ -49,6 +51,8 @@ fn read_i64_array_from<R: io::Read>(reader: &mut R) -> std::io::Result<Vec<i64>>
     Ok(buffer)
 }
 
+/// First write the length of the array in u32
+/// Then, write the elements of the array, each of which is an i64.
 fn write_i64_array_to<W: io::Write>(writer: &mut W, length: u32) -> std::io::Result<()> {
     let mut buffer: Vec<u8> = vec![];
 
