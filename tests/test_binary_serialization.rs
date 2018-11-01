@@ -8,16 +8,13 @@ use std::io;
 #[test]
 fn serialize_deserialize() {
     let filename = "tests/fixtures/1337-write2.binary";
-    let mut write_file = File::create(filename).unwrap();
     let expected_array_length: usize = 1337;
 
     // Write the file
-    write_i64_array_to(&mut write_file, expected_array_length as u32).unwrap();
-    write_file.sync_all().unwrap();
+    write_test_file(filename, expected_array_length).unwrap();
 
     // Read the same file back in
-    let mut read_file = File::open(filename).unwrap();
-    let result = read_i64_array_from(&mut read_file).unwrap();
+    let result = read_test_file(filename).unwrap();
 
     // Check its length
     assert_eq!(expected_array_length, result.len());
@@ -28,11 +25,23 @@ fn serialize_deserialize() {
     }
 }
 
+fn write_test_file(filename: &str, desired_array_length: usize) -> std::io::Result<()> {
+    let mut write_file = File::create(filename)?;
+
+    write_i64_array_to(&mut write_file, desired_array_length as u32)?;
+    write_file.sync_all()?;
+
+    Ok(())
+}
+
+fn read_test_file(filename: &str) -> std::io::Result<Vec<i64>> {
+    let mut read_file = File::open(filename)?;
+
+    read_i64_array_from(&mut read_file)
+}
+
 fn read_i64_array_from<R: io::Read>(reader: &mut R) -> std::io::Result<Vec<i64>> {
     let array_length: usize = reader.read_u32::<LittleEndian>().unwrap() as usize;
-
-    assert_eq!(1337, array_length);
-
     let mut buffer: Vec<i64> = vec![0i64; array_length];
 
     reader.read_i64_into::<LittleEndian>(&mut buffer)?;
