@@ -122,3 +122,39 @@ pub fn write_i64_array_to<W: io::Write>(writer: &mut W, arr: &[i64]) -> std::io:
 
     writer.write_all(&buffer)
 }
+
+pub fn write_i32_array_to(buffer: &mut Vec<u8>, arr: &[i32]) -> std::io::Result<()> {
+    let length: u64 = arr.len() as u64;
+
+    write_length(buffer, length)?;
+
+    // Write the elements
+    for elem in arr {
+        buffer.write_i32::<LittleEndian>(*elem)?;
+    }
+
+    // If we have an odd number of 32-bit integers, pad the end with 32 zeroes
+    // so we end on a multiple of 64, and reads will be Word-aligned.
+    if length % 2 == 1 {
+        buffer.write_i32::<LittleEndian>(0)?;
+    }
+
+    Ok(())
+}
+
+pub fn write_nested_i32_array_to<W: io::Write>(
+    writer: &mut W,
+    arr: &[&[i32]],
+) -> std::io::Result<()> {
+    let length: u64 = arr.len() as u64;
+    let mut buffer: Vec<u8> = vec![];
+
+    write_length(&mut buffer, length)?;
+
+    // Write the elements
+    for inner_arr in arr {
+        write_i32_array_to(&mut buffer, &inner_arr)?;
+    }
+
+    writer.write_all(&buffer)
+}
