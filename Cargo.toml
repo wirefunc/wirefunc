@@ -12,3 +12,4 @@ default-features = false
 
 [dev-dependencies]
 maplit = "1.0.1"
+tempfile = "3.0.4"
