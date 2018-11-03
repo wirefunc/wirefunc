@@ -1,0 +1,22 @@
+post sendDM
+    params:
+        * userId : Int
+        ~ title : String
+        ~ contents : String [ default "" ]
+        ! csrfToken : String [ header "X-CSRF-Token" ]
+
+    response:
+        * user : Result { ok : User Profile, err : Array String }
+
+struct User a
+    * userId : Int [ fka "id" ]
+    * profile : a
+    ~ aliases : Array String [ default [] ]
+
+struct Profile
+    * name : String
+    ~ email : Email [ default "{{adminEmailUsername}}@{{domain}}" ]
+    ~ homepage : String [ default DEFAULT_HOMEPAGE ]
+    ! fullname : String
+
+alias Email = String
