@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use tempfile::TempDir;
 
 #[test]
-fn serialize_deserialize() {
+fn test_one_array() {
     let file_path = TempDir::new().unwrap().into_path().join("deleteme.binary");
     let expected_array_length: usize = 1337;
 
@@ -25,6 +25,35 @@ fn serialize_deserialize() {
     // Check its elements
     for num in 0..expected_array_length {
         assert_eq!(Some(&((num as i64) % 42)), result.get(num));
+    }
+}
+
+#[test]
+fn test_multiple_arrays() {
+    // Write several arrays to the same file, then read them back.
+
+    let file_path = TempDir::new().unwrap().into_path().join("deleteme.binary");
+    let mut file = File::create(&file_path).unwrap();
+    let array_lengths = vec![1, 22, 333, 4444];
+
+    // Write several arrays to the file
+    for array_length in &array_lengths {
+        write_i64_array_to(&mut file, *array_length as u32).unwrap();
+    }
+
+    // Read several arrays out of the file
+    let mut file = File::open(file_path).unwrap();
+
+    for expected_array_length in array_lengths {
+        let result = read_i64_array_from(&mut file).unwrap();
+
+        // Check its length
+        assert_eq!(expected_array_length, result.len());
+
+        // Check its elements
+        for num in 0..expected_array_length {
+            assert_eq!(Some(&((num as i64) % 42)), result.get(num));
+        }
     }
 }
 
