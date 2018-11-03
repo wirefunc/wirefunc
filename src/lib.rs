@@ -1,3 +1,6 @@
+extern crate byteorder;
+
+pub mod arrays;
 pub mod cli;
 pub mod code_gen;
 pub mod error_messages;
