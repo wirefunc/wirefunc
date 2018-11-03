@@ -5,6 +5,20 @@ extern crate wf;
 use std::fs::File;
 use tempfile::TempDir;
 use wf::arrays;
+use wf::pointers;
+use wf::pointers::SegmentPointer;
+
+#[test]
+fn test_segment_pointer() {
+    let word: u64 = 0b000_0000_0000_0000_0000_0000_0101__0000_0000_0000_0000_0000_0000_0000_0011__1;
+    let expected = SegmentPointer {
+        segment: 5,
+        offset: 3,
+    };
+    let actual = pointers::to_segment_pointer(&word);
+
+    assert_eq!(Some(expected), actual);
+}
 
 #[test]
 fn test_i64_arrays() {
