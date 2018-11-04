@@ -8,25 +8,33 @@ use wf::arrays;
 use wf::pointers;
 use wf::pointers::SegmentPointer;
 
+// For reference:
+//
+// |---Offset---|---Length---|-Segment-|
+//    24 bits      24 bits     16 bits
+
 #[test]
 fn test_segment_pointer() {
-    let word: u64 = 0b000_0000_0000_0000_0000_0000_0101__0000_0000_0000_0000_0000_0000_0000_0011__1;
+    let word: u64 =
+        0b0000_0000_0000_0000_0000_0011__0000_0000_0000_0000_0000_0101__0000_0000_0000_0111;
     let expected = SegmentPointer {
-        segment: 5,
         offset: 3,
+        length: 5,
+        segment: 7,
     };
     let actual = pointers::to_segment_pointer(word);
 
-    assert_eq!(Some(expected), actual);
+    assert_eq!(expected, actual);
 }
 
 #[test]
 fn test_segment_pointer_reflexive() {
     let expected: u64 =
-        0b000_0000_0000_0000_0000_0000_0101__0000_0000_0000_0000_0000_0000_0000_0011__1;
+        0b0000_0000_0000_0000_0000_0011__0000_0000_0000_0000_0000_0101__0000_0000_0000_0111;
     let actual = pointers::encode_segment_pointer(SegmentPointer {
-        segment: 5,
         offset: 3,
+        length: 5,
+        segment: 7,
     });
 
     assert_eq!(expected, actual);
