@@ -17,21 +17,21 @@ extern crate byteorder;
 static IS_SEGMENT_POINTER: &'static u64 = &0b1;
 
 #[inline]
-fn is_segment_pointer(word: &u64) -> bool {
-    *word & *IS_SEGMENT_POINTER != 0
+fn is_segment_pointer(word: u64) -> bool {
+    word & *IS_SEGMENT_POINTER != 0
 }
 
-pub fn to_segment_pointer(word: &u64) -> Option<SegmentPointer> {
+pub fn to_segment_pointer(word: u64) -> Option<SegmentPointer> {
     if is_segment_pointer(word) {
         Some(SegmentPointer {
             // shift 1 to drop the is_segment bit
             // then truncate to 32 bits to get the offset
-            offset: (*word >> 1) as u32,
+            offset: (word >> 1) as u32,
 
             // shift 1 to drop the is_segment bit
             // then shift another 32 to skip the offset
             // then truncate to 32 bits to get the segment
-            segment: (*word >> 33) as u32,
+            segment: (word >> 33) as u32,
         })
     } else {
         None
@@ -39,9 +39,9 @@ pub fn to_segment_pointer(word: &u64) -> Option<SegmentPointer> {
 }
 
 #[inline]
-pub fn encode_segment_pointer(ptr: &SegmentPointer) -> u64 {
-    let offset: u64 = (*ptr).offset as u64;
-    let segment: u64 = (*ptr).segment as u64;
+pub fn encode_segment_pointer(ptr: SegmentPointer) -> u64 {
+    let offset: u64 = ptr.offset as u64;
+    let segment: u64 = ptr.segment as u64;
 
     IS_SEGMENT_POINTER | (offset << 1) | (segment << 33)
 }

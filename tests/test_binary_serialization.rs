@@ -15,7 +15,7 @@ fn test_segment_pointer() {
         segment: 5,
         offset: 3,
     };
-    let actual = pointers::to_segment_pointer(&word);
+    let actual = pointers::to_segment_pointer(word);
 
     assert_eq!(Some(expected), actual);
 }
@@ -24,7 +24,7 @@ fn test_segment_pointer() {
 fn test_segment_pointer_reflexive() {
     let expected: u64 =
         0b000_0000_0000_0000_0000_0000_0101__0000_0000_0000_0000_0000_0000_0000_0011__1;
-    let actual = pointers::encode_segment_pointer(&SegmentPointer {
+    let actual = pointers::encode_segment_pointer(SegmentPointer {
         segment: 5,
         offset: 3,
     });
