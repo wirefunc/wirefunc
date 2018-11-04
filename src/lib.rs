@@ -6,7 +6,7 @@ pub mod code_gen;
 pub mod error_messages;
 pub mod field_id;
 pub mod language;
-pub mod pointers;
+pub mod pointer;
 pub mod problems;
 pub mod types;
 

@@ -5,8 +5,8 @@ extern crate wf;
 use std::fs::File;
 use tempfile::TempDir;
 use wf::arrays;
-use wf::pointers;
-use wf::pointers::Pointer;
+use wf::pointer;
+use wf::pointer::Pointer;
 
 // For reference:
 //
@@ -24,7 +24,7 @@ fn test_decode() {
         segment_id_offset: 5,
         is_composite: true,
     };
-    let actual = pointers::decode(word);
+    let actual = pointer::decode(word);
 
     assert_eq!(expected, actual);
 }
@@ -33,7 +33,7 @@ fn test_decode() {
 fn test_segment_pointer_reflexive() {
     let expected: u64 =
         0b0000_0000_0000_0000_0000_0000_0000_0011__0000_0000_0000_0101__000_0000_0000_0110__1;
-    let actual = pointers::encode(Pointer {
+    let actual = pointer::encode(Pointer {
         word_index: 3,
         length: 6,
         segment_id_offset: 5,
