@@ -6,23 +6,25 @@ use std::fs::File;
 use tempfile::TempDir;
 use wf::arrays;
 use wf::pointers;
-use wf::pointers::SegmentPointer;
+use wf::pointers::Pointer;
 
 // For reference:
 //
-// |---Offset---|---Length---|-Segment-|
-//    24 bits      24 bits     16 bits
+// |--Index within Segment--|--Segment--|--Data Length--|--Composite?--|
+//          32 bits            16 bits       15 bits          1 bit
+//
 
 #[test]
-fn test_segment_pointer() {
+fn test_decode() {
     let word: u64 =
-        0b0000_0000_0000_0000_0000_0011__0000_0000_0000_0000_0000_0101__0000_0000_0000_0111;
-    let expected = SegmentPointer {
-        offset: 3,
-        length: 5,
-        segment: 7,
+        0b0000_0000_0000_0000_0000_0000_0000_0011__0000_0000_0000_0101__000_0000_0000_0110__1;
+    let expected = Pointer {
+        word_index: 3,
+        length: 6,
+        segment_id_offset: 5,
+        is_composite: true,
     };
-    let actual = pointers::to_segment_pointer(word);
+    let actual = pointers::decode(word);
 
     assert_eq!(expected, actual);
 }
@@ -30,11 +32,12 @@ fn test_segment_pointer() {
 #[test]
 fn test_segment_pointer_reflexive() {
     let expected: u64 =
-        0b0000_0000_0000_0000_0000_0011__0000_0000_0000_0000_0000_0101__0000_0000_0000_0111;
-    let actual = pointers::encode_segment_pointer(SegmentPointer {
-        offset: 3,
-        length: 5,
-        segment: 7,
+        0b0000_0000_0000_0000_0000_0000_0000_0011__0000_0000_0000_0101__000_0000_0000_0110__1;
+    let actual = pointers::encode(Pointer {
+        word_index: 3,
+        length: 6,
+        segment_id_offset: 5,
+        is_composite: true,
     });
 
     assert_eq!(expected, actual);
