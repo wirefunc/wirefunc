@@ -17,24 +17,24 @@ extern crate byteorder;
 static IS_SEGMENT_POINTER: &'static u64 = &0b1;
 
 #[inline]
-fn is_local_pointer(word: &u64) -> bool {
-    *word & *IS_SEGMENT_POINTER == 0
+fn is_segment_pointer(word: &u64) -> bool {
+    *word & *IS_SEGMENT_POINTER != 0
 }
 
 pub fn to_segment_pointer(word: &u64) -> Option<SegmentPointer> {
-    if is_local_pointer(word) {
-        None
-    } else {
+    if is_segment_pointer(word) {
         Some(SegmentPointer {
-            // shift 1 to drop the is_local bit
+            // shift 1 to drop the is_segment bit
             // then truncate to 32 bits to get the offset
             offset: (*word >> 1) as u32,
 
-            // shift 1 to drop the is_local bit
+            // shift 1 to drop the is_segment bit
             // then shift another 32 to skip the offset
             // then truncate to 32 bits to get the segment
             segment: (*word >> 33) as u32,
         })
+    } else {
+        None
     }
 }
 
