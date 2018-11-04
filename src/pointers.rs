@@ -14,11 +14,11 @@ extern crate byteorder;
 /// layout depends on whether it's an Array, Record, Dict, Set, or Variant.
 /// The generated code knows its type, and will process the layout accordingly.
 
-static IS_LOCAL_POINTER_MASK: &'static u64 = &0b1;
+static IS_SEGMENT_POINTER: &'static u64 = &0b1;
 
 #[inline]
 fn is_local_pointer(word: &u64) -> bool {
-    *word & *IS_LOCAL_POINTER_MASK == 0
+    *word & *IS_SEGMENT_POINTER == 0
 }
 
 pub fn to_segment_pointer(word: &u64) -> Option<SegmentPointer> {
@@ -36,6 +36,14 @@ pub fn to_segment_pointer(word: &u64) -> Option<SegmentPointer> {
             segment: (*word >> 33) as u32,
         })
     }
+}
+
+#[inline]
+pub fn encode_segment_pointer(ptr: &SegmentPointer) -> u64 {
+    let offset: u64 = (*ptr).offset as u64;
+    let segment: u64 = (*ptr).segment as u64;
+
+    IS_SEGMENT_POINTER | (offset << 1) | (segment << 33)
 }
 
 #[derive(PartialEq, Debug)]

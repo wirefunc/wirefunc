@@ -21,6 +21,18 @@ fn test_segment_pointer() {
 }
 
 #[test]
+fn test_segment_pointer_reflexive() {
+    let expected: u64 =
+        0b000_0000_0000_0000_0000_0000_0101__0000_0000_0000_0000_0000_0000_0000_0011__1;
+    let actual = pointers::encode_segment_pointer(&SegmentPointer {
+        segment: 5,
+        offset: 3,
+    });
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
 fn test_i64_arrays() {
     // Write several arrays to the same file, then read them back.
 
