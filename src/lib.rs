@@ -1,5 +1,6 @@
 extern crate byteorder;
 
+pub mod array;
 pub mod arrays;
 pub mod cli;
 pub mod code_gen;
@@ -8,6 +9,7 @@ pub mod field_id;
 pub mod language;
 pub mod pointer;
 pub mod problems;
+pub mod record;
 pub mod types;
 
 use problems::Problem;
