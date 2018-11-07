@@ -40,34 +40,48 @@ mod primitive_fields_test {
         u64: u64,
         bool_true: bool,
         bool_false: bool,
+        f64: f64,
+        f32: f32,
     }
 
     fn decode<'a>(buffer: &'a [u8]) -> Record {
         let presence_table: &[u8] = record::decode_presence_table(buffer);
-        let presence_table_page = presence_table[0];
+        let presence_table_page = 0b1111_1110; // TODO presence_table[0];
 
         let i64 = if presence_table_page & 0b1000_0000 != 0 {
-            LittleEndian::read_i64(&buffer[0..64])
+            LittleEndian::read_i64(&buffer[0..8])
         } else {
             0
         };
 
         let u64 = if presence_table_page & 0b0100_0000 != 0 {
-            LittleEndian::read_u64(&buffer[64..128])
+            LittleEndian::read_u64(&buffer[8..16])
         } else {
             0
         };
 
         let bool_true = if presence_table_page & 0b0010_0000 != 0 {
-            buffer[191] != 0
+            buffer[23] != 0
         } else {
             false
         };
 
         let bool_false = if presence_table_page & 0b0010_0000 != 0 {
-            buffer[255] != 0
+            buffer[31] != 0
         } else {
             false
+        };
+
+        let f64 = if presence_table_page & 0b0001_0000 != 0 {
+            LittleEndian::read_f64(&buffer[32..40])
+        } else {
+            0.0
+        };
+
+        let f32 = if presence_table_page & 0b0000_1000 != 0 {
+            LittleEndian::read_f32(&buffer[44..48])
+        } else {
+            0.0
         };
 
         Record {
@@ -75,25 +89,18 @@ mod primitive_fields_test {
             u64: u64,
             bool_true: bool_true,
             bool_false: bool_false,
+            f64: f64,
+            f32: f32,
         }
     }
 
     fn encode(record: &Record, buffer: &mut [u8]) -> () {
-        //         3 => Value::Int(204),
-        //         5 => Value::UInt64(114),
-        //         7 => Value::Int32(104),
-        //         9 => Value::UInt32(11),
-        //         11 => Value::Int16(23),
-        //         32 => Value::UInt16(42),
-        //         54 => Value::Byte(7),
-        //         55 => Value::Float(2.8),
-        //         57 => Value::Float32(3.14),
-        //         61 => Value::Bool(true),
-        //         62 => Value::Bool(false),
-        LittleEndian::write_i64(&mut buffer[0..64], record.i64);
-        LittleEndian::write_u64(&mut buffer[64..128], record.u64);
-        LittleEndian::write_u64(&mut buffer[128..192], record.bool_true as u64);
-        LittleEndian::write_u64(&mut buffer[192..256], record.bool_false as u64);
+        LittleEndian::write_i64(&mut buffer[0..8], record.i64);
+        LittleEndian::write_u64(&mut buffer[8..16], record.u64);
+        buffer[23] = record.bool_true as u8;
+        buffer[31] = record.bool_false as u8;
+        LittleEndian::write_f64(&mut buffer[32..40], record.f64);
+        LittleEndian::write_f32(&mut buffer[44..48], record.f32);
     }
 
     #[test]
@@ -103,6 +110,8 @@ mod primitive_fields_test {
             u64: 2,
             bool_true: true,
             bool_false: false,
+            f64: 1.23456,
+            f32: 7.23456,
         };
         let mut buffer = [0; 11 * 8];
 
